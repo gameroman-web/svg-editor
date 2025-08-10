@@ -1,23 +1,28 @@
 {
-  "name": "bun-react-template",
-  "version": "0.1.0",
-  "private": true,
+  "name": "svg-editor",
   "type": "module",
+  "private": true,
   "scripts": {
-    "dev": "bun --hot src/index.tsx",
-    "start": "NODE_ENV=production bun src/index.tsx",
-    "build": "bun run build.ts"
+    "build": "bunx astro build",
+    "deploy": "bunx wrangler deploy",
+    "dev": "bunx astro dev",
+    "test": "bun test"
   },
   "dependencies": {
-    "bun-plugin-tailwind": "^0.0.15",
-    "react": "^19",
-    "react-dom": "^19",
+    "@astrojs/react": "^4.3.0",
+    "@tailwindcss/vite": "^4.1.11",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "astro": "^5.12.9"
+    "astro": "^5.12.9",
+    "wrangler": "^4.28.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.2"
   }
 }

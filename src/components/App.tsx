@@ -1,177 +1,16 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 
-// Main App component
+import { transformPath } from "~/lib/transformPath";
+
 const App = () => {
-  // State for the original path data
   const [pathData, setPathData] = useState("M10 10 H90 V90 H10 Z");
-  // State for the new, transformed path data.
   const [transformedPath, setTransformedPath] = useState("");
-  // State for the x-axis offset.
+
   const [xOffset, setXOffset] = useState(10);
-  // State for the y-axis offset.
   const [yOffset, setYOffset] = useState(10);
-  // State for error messages.
+
   const [errorMessage, setErrorMessage] = useState("");
-  // State for unit test results
-  const [testResults, setTestResults] = useState<
-    {
-      transformed: string;
-      passed: boolean;
-      name: string;
-      input: string;
-      xOffset: number;
-      yOffset: number;
-      expected: string;
-    }[]
-  >([]);
 
-  // Function to copy text to clipboard
-  const copyToClipboard = (text: string) => {
-    const el = document.createElement("textarea");
-    el.value = text;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand("copy");
-    document.body.removeChild(el);
-  };
-
-  // Unit tests to verify the transformation logic
-  const runTests = () => {
-    const testCases = [
-      {
-        name: "Simple absolute square",
-        input: "M10 10 H90 V90 H10 Z",
-        xOffset: 10,
-        yOffset: 10,
-        expected: "M 20 20 H 100 V 100 H 20 Z",
-      },
-      {
-        name: "Simple relative square",
-        input: "m10 10 h80 v80 h-80 z",
-        xOffset: 10,
-        yOffset: 10,
-        expected: "m 20 20 h 80 v 80 h -80 z",
-      },
-      {
-        name: "Complex path with absolute and relative commands",
-        input: "M10 10 L50 50 l20 0 Z",
-        xOffset: 5,
-        yOffset: 5,
-        expected: "M 15 15 L 55 55 l 20 0 Z",
-      },
-      {
-        name: "User-provided path (your specific case)",
-        input:
-          "m19.01 11.55-7.46 7.46c-.46.46-.46 1.19 0 1.65a1.16 1.16 0 0 0 1.64 0l7.46-7.46c.46-.46.46-1.19 0-1.65s-1.19-.46-1.65 0Zm.16-8.21c-.46-.46-1.19-.46-1.65 0L3.34 17.52c-.46.46-.46 1.19 0 1.65a1.16 1.16 0 0 0 1.64 0L19.16 4.99c.46-.46.46-1.19 0-1.65Z",
-        xOffset: 10,
-        yOffset: 10,
-        expected:
-          "m 29.01 21.55 -7.46 7.46 c -0.46 0.46 -0.46 1.19 0 1.65 a 1.16 1.16 0 0 0 1.64 0 l 7.46 -7.46 c 0.46 -0.46 0.46 -1.19 0 -1.65 s -1.19 -0.46 -1.65 0 Z m 0.16 -8.21 c -0.46 -0.46 -1.19 -0.46 -1.65 0 L 13.34 27.52 c -0.46 0.46 -0.46 1.19 0 1.65 a 1.16 1.16 0 0 0 1.64 0 L 29.16 14.99 c 0.46 -0.46 0.46 -1.19 0 -1.65 Z",
-      },
-      {
-        name: "Absolute Line commands",
-        input: "M10 10 L50 20 L30 40",
-        xOffset: 5,
-        yOffset: 5,
-        expected: "M 15 15 L 55 25 L 35 45",
-      },
-      {
-        name: "Relative Line commands",
-        input: "m10 10 l40 10 l-20 20",
-        xOffset: 5,
-        yOffset: 5,
-        expected: "m 15 15 l 40 10 l -20 20",
-      },
-      {
-        name: "Absolute Curve commands",
-        input: "M10 10 C20 40 40 40 50 10",
-        xOffset: 10,
-        yOffset: 10,
-        expected: "M 20 20 C 30 50 50 50 60 20",
-      },
-      {
-        name: "Relative Curve commands",
-        input: "m10 10 c10 30 30 30 40 0",
-        xOffset: 10,
-        yOffset: 10,
-        expected: "m 20 20 c 10 30 30 30 40 0",
-      },
-    ];
-
-    const results = testCases.map((test) => {
-      const transformed = handleTransformLogic(
-        test.input,
-        test.xOffset,
-        test.yOffset
-      );
-      // Remove all whitespace for a robust comparison
-      const passed =
-        transformed.replace(/\s+/g, "") === test.expected.replace(/\s+/g, "");
-      return { ...test, transformed, passed };
-    });
-
-    setTestResults(results);
-  };
-
-  // Function to apply the transformation logic
-  const handleTransformLogic = (d: string, dx: number, dy: number) => {
-    // Regex to split the path string into commands and their arguments as groups
-    const commandRegex = /([a-zA-Z][^a-zA-Z]*)/g;
-    const commands = d.match(commandRegex);
-    if (!commands) return "";
-
-    let newPath = "";
-    let isFirstCommand = true;
-
-    for (const cmdGroup of commands) {
-      const command = cmdGroup[0]!;
-      const paramsString = cmdGroup.substring(1);
-
-      // Regex to extract all numbers, including decimals and negative signs
-      const values = paramsString.match(/-?\d*\.?\d+/g) || [];
-      const newValues = values.map(Number);
-
-      let isRelativeCommand = command.toLowerCase() === command;
-      let isAbsoluteCommand = !isRelativeCommand;
-
-      let paramIndex = 0;
-      let transformedValues = [];
-
-      while (paramIndex < newValues.length) {
-        let val = newValues[paramIndex]!;
-
-        if (isAbsoluteCommand || (isFirstCommand && paramIndex < 2)) {
-          if (command.toUpperCase() === "H") {
-            transformedValues.push(val + dx);
-          } else if (command.toUpperCase() === "V") {
-            transformedValues.push(val + dy);
-          } else if (
-            command.toUpperCase() === "A" &&
-            (paramIndex === 5 || paramIndex === 6)
-          ) {
-            // Arc command's last two parameters are coordinates
-            transformedValues.push(val + (paramIndex === 5 ? dx : dy));
-          } else if (paramIndex % 2 === 0) {
-            transformedValues.push(val + dx);
-          } else {
-            transformedValues.push(val + dy);
-          }
-        } else {
-          transformedValues.push(val);
-        }
-        paramIndex++;
-      }
-
-      // Rebuild the path string with proper spacing
-      newPath += `${command} ${transformedValues.join(" ")} `;
-
-      isFirstCommand = false;
-    }
-
-    return newPath.trim();
-  };
-
-  // Function to apply the transformation to the user input
   const handleTransform = () => {
     setErrorMessage("");
     try {
@@ -179,7 +18,7 @@ const App = () => {
         setErrorMessage("Please enter a valid SVG path data string.");
         return;
       }
-      const newPathData = handleTransformLogic(pathData, xOffset, yOffset);
+      const newPathData = transformPath(pathData, xOffset, yOffset);
       setTransformedPath(newPathData);
     } catch (error) {
       setErrorMessage(
@@ -188,11 +27,6 @@ const App = () => {
       console.error(error);
     }
   };
-
-  // Run tests on initial load
-  useEffect(() => {
-    runTests();
-  }, []);
 
   return (
     <div className="bg-slate-900 text-white min-h-screen p-8 font-sans antialiased">
@@ -329,72 +163,6 @@ const App = () => {
                 </svg>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* Unit tests section */}
-        <section className="bg-slate-800 p-8 rounded-xl shadow-lg border border-slate-700">
-          <h2 className="text-2xl font-bold mb-4 text-slate-200">Unit Tests</h2>
-          <p className="text-slate-400 mb-4">
-            These tests check the transformation logic with various path data
-            examples.
-          </p>
-          <div className="space-y-4">
-            {testResults.map((result, index) => (
-              <div
-                key={index}
-                className={`p-4 rounded-lg border-l-4 ${
-                  result.passed
-                    ? "bg-emerald-900/50 border-emerald-500"
-                    : "bg-red-900/50 border-red-500"
-                }`}
-              >
-                <h4 className="text-lg font-semibold flex items-center gap-2">
-                  {result.passed ? (
-                    <span className="text-emerald-400">✓</span>
-                  ) : (
-                    <span className="text-red-400">✗</span>
-                  )}
-                  {result.name}
-                </h4>
-                <div className="ml-6 space-y-2 text-sm">
-                  <p className="text-slate-300">
-                    <strong>Input:</strong>
-                  </p>
-                  <pre className="p-2 overflow-x-auto text-slate-50 bg-slate-900 rounded-md">
-                    <code>{result.input}</code>
-                  </pre>
-                  <div className="flex items-center justify-between">
-                    <p className="text-slate-300">
-                      <strong>Transformed:</strong>
-                    </p>
-                    {!result.passed && (
-                      <button
-                        onClick={() => copyToClipboard(result.transformed)}
-                        className="py-1 px-3 bg-indigo-600 text-white text-xs rounded-md hover:bg-indigo-700 transition-colors"
-                      >
-                        Copy Error
-                      </button>
-                    )}
-                  </div>
-                  <pre className="p-2 overflow-x-auto text-slate-50 bg-slate-900 rounded-md">
-                    <code>{result.transformed}</code>
-                  </pre>
-                  <p className="text-slate-300">
-                    <strong>Expected:</strong>
-                  </p>
-                  <pre className="p-2 overflow-x-auto text-slate-50 bg-slate-900 rounded-md">
-                    <code>{result.expected}</code>
-                  </pre>
-                  {!result.passed && (
-                    <p className="text-red-400 mt-2">
-                      <strong>Error:</strong> Expected output does not match the
-                      transformed output.
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))}
           </div>
         </section>
       </div>
