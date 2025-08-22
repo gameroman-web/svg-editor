@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-import { transformPath } from "~/lib/transformPath";
+import { translatePath } from "~/lib/translatePath";
+import { scalePath } from "~/lib/scalePath";
 
 const App = () => {
   const [pathData, setPathData] = useState("M10 10 H90 V90 H10 Z");
@@ -9,6 +10,9 @@ const App = () => {
   const [xOffset, setXOffset] = useState(10);
   const [yOffset, setYOffset] = useState(10);
 
+  const [scale, setScale] = useState(1);
+
+  const [mode, setMode] = useState<"translate" | "scale">("translate");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleTransform = () => {
@@ -18,7 +22,14 @@ const App = () => {
         setErrorMessage("Please enter a valid SVG path data string.");
         return;
       }
-      const newPathData = transformPath(pathData, xOffset, yOffset);
+
+      let newPathData = "";
+      if (mode === "translate") {
+        newPathData = translatePath(pathData, { dx: xOffset, dy: yOffset });
+      } else if (mode === "scale") {
+        newPathData = scalePath(pathData, { scale });
+      }
+
       setTransformedPath(newPathData);
     } catch (error) {
       setErrorMessage(
@@ -36,8 +47,7 @@ const App = () => {
             SVG Path Transformer
           </h1>
           <p className="text-slate-400">
-            Enter your SVG `d` attribute and specify the desired translation to
-            get the new path data.
+            Enter your SVG `d` attribute and choose a transformation.
           </p>
         </header>
 
@@ -59,39 +69,82 @@ const App = () => {
             />
           </div>
 
-          {/* Input section for offsets */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 space-y-2">
-              <label
-                htmlFor="x-offset"
-                className="block text-lg font-medium text-slate-200"
-              >
-                Move Right/Left (X)
-              </label>
-              <input
-                id="x-offset"
-                type="number"
-                value={xOffset}
-                onChange={(e) => setXOffset(parseFloat(e.target.value))}
-                className="w-full p-3 text-slate-100 bg-slate-700 border border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
-              />
-            </div>
-            <div className="flex-1 space-y-2">
-              <label
-                htmlFor="y-offset"
-                className="block text-lg font-medium text-slate-200"
-              >
-                Move Up/Down (Y)
-              </label>
-              <input
-                id="y-offset"
-                type="number"
-                value={yOffset}
-                onChange={(e) => setYOffset(parseFloat(e.target.value))}
-                className="w-full p-3 text-slate-100 bg-slate-700 border border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
-              />
-            </div>
+          {/* Mode selector */}
+          <div className="flex gap-4">
+            <button
+              className={`flex-1 py-2 rounded-md font-semibold ${
+                mode === "translate"
+                  ? "bg-indigo-500"
+                  : "bg-slate-700 hover:bg-slate-600"
+              }`}
+              onClick={() => setMode("translate")}
+            >
+              Translate
+            </button>
+            <button
+              className={`flex-1 py-2 rounded-md font-semibold ${
+                mode === "scale"
+                  ? "bg-indigo-500"
+                  : "bg-slate-700 hover:bg-slate-600"
+              }`}
+              onClick={() => setMode("scale")}
+            >
+              Scale
+            </button>
           </div>
+
+          {/* Input fields depending on mode */}
+          {mode === "translate" ? (
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1 space-y-2">
+                <label
+                  htmlFor="x-offset"
+                  className="block text-lg font-medium text-slate-200"
+                >
+                  Move Right/Left (X)
+                </label>
+                <input
+                  id="x-offset"
+                  type="number"
+                  value={xOffset}
+                  onChange={(e) => setXOffset(parseFloat(e.target.value))}
+                  className="w-full p-3 text-slate-100 bg-slate-700 border border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+                />
+              </div>
+              <div className="flex-1 space-y-2">
+                <label
+                  htmlFor="y-offset"
+                  className="block text-lg font-medium text-slate-200"
+                >
+                  Move Up/Down (Y)
+                </label>
+                <input
+                  id="y-offset"
+                  type="number"
+                  value={yOffset}
+                  onChange={(e) => setYOffset(parseFloat(e.target.value))}
+                  className="w-full p-3 text-slate-100 bg-slate-700 border border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <label
+                htmlFor="scale"
+                className="block text-lg font-medium text-slate-200"
+              >
+                Scale Factor
+              </label>
+              <input
+                id="scale"
+                type="number"
+                step="0.1"
+                value={scale}
+                onChange={(e) => setScale(parseFloat(e.target.value))}
+                className="w-full p-3 text-slate-100 bg-slate-700 border border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+              />
+            </div>
+          )}
 
           {/* Transform button */}
           <button

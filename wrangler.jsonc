@@ -1,7 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
+
   "name": "svg-editor",
-  "compatibility_date": "2025-08-10",
+  "compatibility_date": "2025-08-22",
   "account_id": "9cb2e2e27c4416de8fa3465ed0ee8deb",
 
   "assets": {

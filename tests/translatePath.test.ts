@@ -1,6 +1,6 @@
 import { describe, it, expect } from "bun:test";
 
-import { transformPath } from "~/lib/transformPath";
+import { translatePath } from "~/lib/translatePath";
 
 interface TestCase {
   name: string;
@@ -10,7 +10,7 @@ interface TestCase {
   expected: string;
 }
 
-describe("transformPath", () => {
+describe("translatePath", () => {
   const testCases: TestCase[] = [
     {
       name: "Simple absolute square",
@@ -74,10 +74,11 @@ describe("transformPath", () => {
 
   for (const test of testCases) {
     it(test.name, () => {
-      const transformed = transformPath(test.input, test.xOffset, test.yOffset);
-      expect(transformed.replace(/\s+/g, "")).toBe(
-        test.expected.replace(/\s+/g, "")
-      );
+      const transformed = translatePath(test.input, {
+        dx: test.xOffset,
+        dy: test.yOffset,
+      });
+      expect(transformed).toBe(test.expected);
     });
   }
 });

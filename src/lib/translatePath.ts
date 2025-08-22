@@ -1,4 +1,7 @@
-export function transformPath(d: string, dx: number, dy: number): string {
+export function translatePath(
+  d: string,
+  { dx, dy }: { dx: number; dy: number }
+): string {
   const commandRegex = /([a-zA-Z][^a-zA-Z]*)/g;
   const commands = d.match(commandRegex);
   if (!commands) return "";
@@ -47,5 +50,5 @@ export function transformPath(d: string, dx: number, dy: number): string {
     isFirstCommand = false;
   }
 
-  return newPath.trim();
+  return newPath.trim().replace(/\s+/g, " ");
 }
