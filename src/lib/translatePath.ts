@@ -1,6 +1,6 @@
 export function translatePath(
   d: string,
-  { dx, dy }: { dx: number; dy: number }
+  { dx, dy }: { dx: number; dy: number },
 ): string {
   const commandRegex = /([a-zA-Z][^a-zA-Z]*)/g;
   const commands = d.match(commandRegex);

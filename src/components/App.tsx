@@ -1,7 +1,6 @@
 import { useState } from "react";
-
-import { translatePath } from "~/lib/translatePath";
-import { scalePath } from "~/lib/scalePath";
+import { scalePath } from "#lib/scalePath";
+import { translatePath } from "#lib/translatePath";
 
 const App = () => {
   const [pathData, setPathData] = useState("M10 10 H90 V90 H10 Z");
@@ -33,7 +32,7 @@ const App = () => {
       setTransformedPath(newPathData);
     } catch (error) {
       setErrorMessage(
-        "An error occurred during transformation. Please check your input."
+        "An error occurred during transformation. Please check your input.",
       );
       console.error(error);
     }
@@ -72,6 +71,7 @@ const App = () => {
           {/* Mode selector */}
           <div className="flex gap-4">
             <button
+              type="button"
               className={`flex-1 py-2 rounded-md font-semibold ${
                 mode === "translate"
                   ? "bg-indigo-500"
@@ -82,6 +82,7 @@ const App = () => {
               Translate
             </button>
             <button
+              type="button"
               className={`flex-1 py-2 rounded-md font-semibold ${
                 mode === "scale"
                   ? "bg-indigo-500"
@@ -148,6 +149,7 @@ const App = () => {
 
           {/* Transform button */}
           <button
+            type="button"
             onClick={handleTransform}
             className="w-full py-3 px-6 bg-indigo-500 text-white font-bold rounded-lg shadow-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition-colors"
           >
@@ -192,6 +194,7 @@ const App = () => {
               </h3>
               <div className="w-full aspect-square border border-dashed border-slate-600 rounded-lg overflow-hidden">
                 <svg viewBox="0 0 150 150" className="w-full h-full">
+                  <title>Transformed Path</title>
                   <path
                     d={pathData}
                     fill="#4f46e5"
@@ -207,6 +210,7 @@ const App = () => {
               </h3>
               <div className="w-full aspect-square border border-dashed border-slate-600 rounded-lg overflow-hidden">
                 <svg viewBox="0 0 150 150" className="w-full h-full">
+                  <title>Transformed Path</title>
                   <path
                     d={transformedPath || pathData}
                     fill="#10b981"
@@ -214,7 +218,7 @@ const App = () => {
                     strokeWidth="1"
                   />
                 </svg>
-              </div>
+            </div>
             </div>
           </div>
         </section>

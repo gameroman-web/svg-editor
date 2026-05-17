@@ -1,6 +1,6 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 
-import { scalePath } from "~/lib/scalePath";
+import { scalePath } from "#lib/scalePath";
 
 interface TestCase {
   name: string;
