@@ -20,7 +20,7 @@ export function scalePath(d: string, { scale }: { scale: number }): string {
 
     while (paramIndex < newValues.length) {
       const val = newValues[paramIndex]!;
-      let scaledVal;
+      let scaledVal: string;
 
       if (command.toUpperCase() === "A") {
         if (
