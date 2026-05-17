@@ -218,7 +218,7 @@ const App = () => {
                     strokeWidth="1"
                   />
                 </svg>
-            </div>
+              </div>
             </div>
           </div>
         </section>
