@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { scalePath } from "#lib/scalePath";
+import { scalePath } from "#lib/scale-path";
 
 interface TestCase {
   name: string;
