@@ -1,11 +1,4 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "extends": ["@gameroman/config/biome"],
-  "linter": {
-    "rules": {
-      "style": {
-        "noNonNullAssertion": "warn"
-      }
-    }
-  }
+  "extends": ["@gameroman/config/biome"]
 }

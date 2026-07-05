@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { scalePath } from "#lib/scalePath";
-import { translatePath } from "#lib/translatePath";
+import { scalePath } from "#lib/scale-path";
+import { translatePath } from "#lib/translate-path";
 
-const App = () => {
+function App() {
   const [pathData, setPathData] = useState("M10 10 H90 V90 H10 Z");
   const [transformedPath, setTransformedPath] = useState("");
 
@@ -225,6 +225,6 @@ const App = () => {
       </div>
     </div>
   );
-};
+}
 
 export default App;

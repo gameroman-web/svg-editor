@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import { translatePath } from "#lib/translatePath";
+import { translatePath } from "#lib/translate-path";
 
 interface TestCase {
   name: string;
