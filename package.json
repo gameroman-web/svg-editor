@@ -27,7 +27,7 @@
     "@babel/types": "7.29.8",
     "@jridgewell/trace-mapping": "0.3.31",
     "esbuild": "0.28.2",
-    "find-process": "npm:find-proc@0.1.0",
+    "js-yaml": "npm:neoyaml@0.1.1",
     "semver": "7.8.5",
     "unstorage": "2.0.0-alpha.9"
   },
@@ -36,7 +36,7 @@
     "@tailwindcss/vite": "4.3.3",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",
-    "astro": "7.2.4",
+    "astro": "7.2.8",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "tailwindcss": "4.3.3"
@@ -46,6 +46,6 @@
     "@gameroman/config": "0.2.9",
     "@types/bun": "1.4.0",
     "typescript": "7.0.2",
-    "wrangler": "4.125.0"
+    "wrangler": "4.126.0"
   }
 }
